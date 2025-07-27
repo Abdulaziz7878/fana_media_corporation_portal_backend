@@ -40,32 +40,3 @@ const upload = multer({
 });
 
 module.exports = upload;
-
-
-
-// const multer = require('multer');
-// const path = require('path');
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/'); // Store videos here
-//     },
-//     filename: (req, file, cb) => {
-//         const uniqueName = Date.now() + '-' + file.originalname;
-//         cb(null, uniqueName);
-//     },
-// });
-
-// const upload = multer({
-//     storage,
-//     limits: { fileSize: 2000 * 1024 * 1024 }, // Optional: 2GB limit
-//     fileFilter: (req, file, cb) => {
-//         const ext = path.extname(file.originalname);
-//         if (ext !== '.mp4' && ext !== '.mkv' && ext !== '.mov') {
-//             return cb(new Error('Only video files are allowed'));
-//         }
-//         cb(null, true);
-//     },
-// });
-
-// module.exports = upload;
