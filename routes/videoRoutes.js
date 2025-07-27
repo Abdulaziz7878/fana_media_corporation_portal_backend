@@ -21,6 +21,6 @@ router.get('/all', authMiddleware, requireAdmin, videoController.getAllVideos);
 router.delete('/:id', authMiddleware, requireAdmin, videoController.deleteVideo);
 
 // Download video by ID
-router.get('/download/:id', authenticate, videoController.downloadVideo);
+router.get('/download/:id', authMiddleware, videoController.downloadVideo);
 
 module.exports = router;
