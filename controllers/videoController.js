@@ -1,6 +1,7 @@
 const db = require('../config/db'); // Your DB connection file
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
+const fs = require('fs').promises;
 
 // Upload video
 const uploadVideo = async(req, res) => {
@@ -109,7 +110,10 @@ const downloadVideo = async(req, res) => {
         const userId = req.user.id;
         const isAdmin = req.user.role === 'admin';
 
-        // Fetch video info by ID
+        if (!/^\d+$/.test(videoId)) {
+            return res.status(400).json({ message: 'Invalid video ID' });
+        }
+
         const [rows] = await db.query('SELECT * FROM videos WHERE id = ?', [videoId]);
 
         if (rows.length === 0) {
@@ -118,19 +122,22 @@ const downloadVideo = async(req, res) => {
 
         const video = rows[0];
 
-        // Access control
         if (!isAdmin && !video.is_public && video.recipient_id !== userId && video.uploaded_by !== userId) {
+            console.warn(`Access denied: User $ { userId }
+                        tried to access video $ { videoId }`);
             return res.status(403).json({ message: 'Access denied' });
         }
 
         const filePath = path.join(__dirname, '../uploads', video.filename);
 
-        if (!fs.existsSync(filePath)) {
+        try {
+            await fs.access(filePath);
+        } catch {
             return res.status(404).json({ message: 'File not found on server' });
         }
 
-        // Serve download with original filename if available
         res.download(filePath, video.original_name || video.filename);
+
     } catch (error) {
         console.error('Download error:', error);
         res.status(500).json({ message: 'Server error during download' });
